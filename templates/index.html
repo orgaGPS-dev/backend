@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - orgagps{% endblock %}
+
+{% block content %}
+<div class="center">    
+    {% if user.is_authenticated %}
+        {% if user.product_owner %}
+            <link rel="stylesheet" href="{% static 'css/is_admin.css' %}">
+
+            <!-- admin Landing Page -->
+            <div class="app-header">
+                <h3>orgagps</h3>
+            </div>
+            <div class="container">
+                <!-- Linke Spalte (statisch) -->
+                <div class="left-column">
+                    <h3>Navigation</h3>
+                    <ul>
+                    {% if user.product_owner %}
+                        <p><a href="#" hx-get="{% url 'create_workzone' %}" hx-target="#right-column-content">Workzone</a></p>
+                    {% endif %}
+
+                    <p><a href="#" hx-get="{% url 'create_user' %}" hx-target="#right-column-content">User Management</a></p>
+                    </ul>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Logout</button>
+                    </form>   
+                </div>
+
+                <!-- Rechte Spalte (dynamischer Inhalt wird hier geladen) -->
+                <div class="right-column" id="right-column-content">
+                    <h3>Dashboard</h3>
+                    <p>Willkommen zum Admin-Dashboard.</p>
+                </div>
+            </div>
+            <div class="app-footer">
+                <h3>orgagps</h3>
+            </div>
+            
+
+        {% else %}
+            <!-- Nicht angemeldete Benutzer -->
+            <form>
+                <p>Welcome to orgagps. Please log in.</p>
+                <p><a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">Register</a></p>
+            </form>
+        {% endif %}
+    {% else %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% endif %}
+</div>
+
+
+
+{% endblock %}
+

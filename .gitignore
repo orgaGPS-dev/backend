@@ -1,0 +1,5 @@
+terraform-aws-ec2/.terraform/
+terraform-aws-ec2/terraform.tfstate
+terraform-aws-ec2/terraform.tfstate.backup
+
+scripts/

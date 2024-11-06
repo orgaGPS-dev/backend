@@ -1,0 +1,24 @@
+<!-- registration/account_activated.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Your account has been activated!</h2>
+    <p>Back to Login in <span id="counter">5</span> seconds...</p>
+
+    <!-- JavaScript für den Countdown und die automatische Weiterleitung -->
+    <script type="text/javascript">
+        // Setze die Zeit für den Countdown auf 5 Sekunden
+        var timeLeft = 5;
+        var elem = document.getElementById('counter');  // Element für den Countdown
+
+        var timerId = setInterval(function() {
+            if (timeLeft == 0) {
+                clearInterval(timerId);  // Stoppe den Countdown
+                window.location.href = "{% url 'login' %}";  // Leite zur Login-Seite weiter
+            } else {
+                elem.innerHTML = timeLeft;  // Aktualisiere den Countdown-Anzeigetext
+                timeLeft--;
+            }
+        }, 1000);  // Jede Sekunde (1000 Millisekunden) den Countdown aktualisieren
+    </script>
+{% endblock %}

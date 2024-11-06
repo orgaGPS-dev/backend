@@ -1,0 +1,16 @@
+<h3>Manage Users</h3>
+
+<div>
+    <form method="post" id="create-user-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add User</button>
+    </form>
+
+    <ul>
+        {% for workzone_entry in created_workzones %}
+            <li>{{ workzone_entry.name }}</li>
+        {% endfor %}
+    </ul>
+</div>
+

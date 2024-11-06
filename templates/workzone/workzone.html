@@ -1,0 +1,21 @@
+<h3>Manage Workzones</h3>
+
+<div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Workzone</button>
+    </form>
+
+    <ul>
+        {% for workzone_entry in existing_workzones %}
+            <li>{{ workzone_entry.name }}</li>
+        {% endfor %}
+    </ul>
+    <form action="{% url 'logout' %}" method="post">
+        <p>Hi, {{ user.username }}. Thanks for logging in.</p>
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+</div>
+
