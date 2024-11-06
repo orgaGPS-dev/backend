@@ -6,7 +6,7 @@ from pathlib import Path
 
 # AWS Secrets Manager verwenden, um Umgebungsvariablen sicher abzurufen
 def get_secret(secret_name):
-    client = boto3.client('secretsmanager', region_name=os.getenv("AWS_REGION"))
+    client = boto3.client('secretsmanager', region_name=os.getenv("AW S_REGION"))
     try:
         response = client.get_secret_value(SecretId=secret_name)
     except Exception as e:

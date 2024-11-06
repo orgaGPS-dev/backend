@@ -34,7 +34,7 @@ resource "aws_codepipeline" "frontend_pipeline" {
       output_artifacts = ["SourceArtifact"]
 
       configuration = {
-        Owner      = "orgaGPS"                    # Replace with your GitHub username or organization
+        Owner      = "orgaGPS-dev"                    # Replace with your GitHub username or organization
         Repo       = "frontend"                           # Replace with the frontend repository name
         Branch     = "main"                                    # Specify the branch to use
         OAuthToken = local.github_secrets.github_client_secret # Corrected attribute name
@@ -87,7 +87,7 @@ resource "aws_codepipeline" "backend_pipeline" {
       output_artifacts = ["SourceArtifact"]
 
       configuration = {
-        Owner      = "orgaGPS"                    # Replace with your GitHub username or organization
+        Owner      = "orgaGPS-dev"                    # Replace with your GitHub username or organization
         Repo       = "backend"                            # Replace with the backend repository name
         Branch     = "main"                                    # Specify the branch to use
         OAuthToken = local.github_secrets.github_client_secret # Corrected attribute name
