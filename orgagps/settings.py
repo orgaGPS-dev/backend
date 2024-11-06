@@ -1,32 +1,16 @@
 import os
 import json
-import boto3
 from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 
-# AWS Secrets Manager verwenden, um Umgebungsvariablen sicher abzurufen
-def get_secret(secret_name):
-    client = boto3.client('secretsmanager', region_name=os.getenv("AW S_REGION"))
-    try:
-        response = client.get_secret_value(SecretId=secret_name)
-    except Exception as e:
-        raise ImproperlyConfigured(f"Could not retrieve secret {secret_name}: {str(e)}")
-
-    # Falls der Secret-Manager eine Secret-String zurückgibt
-    if 'SecretString' in response:
-        return json.loads(response['SecretString'])
-    else:
-        raise ImproperlyConfigured("Secret string not found in the AWS Secrets Manager response.")
-
-# Secret aus AWS laden
-secrets = get_secret("orgagps_app_secrets")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Abruf der geheimen Schlüssel aus AWS Secrets Manager
-SECRET_KEY = secrets.get('DJANGO_SECRET_KEY')
-DEBUG = secrets.get('DJANGO_DEBUG') == 'True'
-ALLOWED_HOSTS = secrets.get('DJANGO_ALLOWED_HOSTS').split(',')
+SECRET_KEY = 's6)yj@n7@a04p!dc106f^cap_!kn^fxn!_n&fu&xq!e+9fz)!$'
+DEBUG = True
+
+ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
     "https://orgagps.com",
@@ -87,6 +71,13 @@ WSGI_APPLICATION = 'orgagps.wsgi.application'
 # Database configuration
 DATABASES = {
     'default': {
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': BASE_DIR / 'db.sqlite3',
+     }
+}
+
+'''DATABASES = {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': secrets.get('DB_NAME'),
         'USER': secrets.get('DB_USER'),
@@ -94,7 +85,7 @@ DATABASES = {
         'HOST': secrets.get('DB_HOST'),
         'PORT': secrets.get('DB_PORT', '5432'),
     }
-}
+}'''
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -125,11 +116,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = secrets.get('MAIL_HOST')
+EMAIL_HOST = 'smtp.ionos.de'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = secrets.get('MAIL')
-EMAIL_HOST_PASSWORD = secrets.get('MAIL_PASS')
+EMAIL_HOST_USER = 'Kingzton'
+EMAIL_HOST_PASSWORD = 'Peace0473!'
 DEFAULT_FROM_EMAIL = 'noreply@orgagps.com'
 EMAIL_SUBJECT_PREFIX = 'Password Recovery'
 
