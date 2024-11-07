@@ -2,13 +2,9 @@ import os
 import json
 from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
-from dotenv import load_dotenv
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv(os.path.join(BASE_DIR, '.env'))
-
 
 # Abruf der geheimen Schlüssel aus AWS Secrets Manager
 SECRET_KEY = 's6)yj@n7@a04p!dc106f^cap_!kn^fxn!_n&fu&xq!e+9fz)!$'
@@ -72,17 +68,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'orgagps.wsgi.application'
 
+# Database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT'),
-    }
+         'ENGINE': 'django.db.backends.sqlite3',
+         'NAME': BASE_DIR / 'db.sqlite3',
+     }
 }
-
 
 '''DATABASES = {
     'default': {

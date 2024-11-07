@@ -2,10 +2,14 @@
 FROM python:3.9-slim
 
 # Arbeitsverzeichnis festlegen
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Systemabhängigkeiten installieren
-RUN apt-get update && apt-get install -y gcc
+RUN apt-get update && apt-get install -y \
+    python3-dev \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Abhängigkeiten installieren
 COPY requirements.txt .
@@ -24,4 +28,4 @@ RUN pip install gunicorn
 EXPOSE 8000
 
 # Startbefehl für Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "orgagps.wsgi:application"]
+CMD ["gunicorn",  "--workers", "3", "--bind", "0.0.0.0:8000", "orgagps.wsgi:application"]

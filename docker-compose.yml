@@ -1,49 +1,35 @@
-version: '3.8'
-
 services:
   web:
-    build:
-      context: ./backend  # Zeigt auf den 'backend'-Ordner
+    build: .
+    command: >
+      sh -c "python manage.py migrate && 
+              gunicorn --workers 3 --bind 0.0.0.0:8000 orgagps.wsgi:application"
     volumes:
-      - ./backend:/app
-      - ./backend/static:/app/static  # Statische Dateien
-    expose:
-      - "8000"
-    env_file:
-      - .env
-    command: ["./wait-for-it.sh", "db:5432", "--", "gunicorn", "--bind", "0.0.0.0:8000", "orgagps.wsgi:application"]
-    depends_on:
-      - db
-
-  frontend:
-    build:
-      context: ./frontend  # Next.js-Frontend im 'frontend'-Ordner
-    volumes:
-      - ./frontend:/app
+      - .:/usr/src/app
+      - static_volume:/usr/src/app/static
     ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://nginx/api  # API-Aufruf über Nginx weiterleiten
-    depends_on:
-      - web
-
-  db:
-    image: postgres:13  # Verwende eine stabile Version von Postgres
+      - "8000:8000"
+    networks:
+      - app-network
     env_file:
       - .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
   nginx:
     image: nginx:latest
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./backend/static:/app/static  # Statische Dateien für Nginx
+      - ./nginx:/etc/nginx/conf.d
+      - static_volume:/usr/src/app/static
     depends_on:
       - web
-      - frontend
+    networks:
+      - app-network
 
 volumes:
-  postgres_data:
+  static_volume:
+
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
