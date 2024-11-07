@@ -13,6 +13,8 @@ services:
       - app-network
     env_file:
       - .env
+    depends_on:
+      - db  # Ensure web starts after db is ready
 
   nginx:
     image: nginx:latest
@@ -26,8 +28,20 @@ services:
     networks:
       - app-network
 
+  db:
+    image: postgres:13  # Use the desired PostgreSQL version
+    environment:
+      POSTGRES_DB: mydatabase  # Replace with your database name
+      POSTGRES_USER: myuser    # Replace with your database username
+      POSTGRES_PASSWORD: mypassword  # Replace with your database password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
 volumes:
   static_volume:
+  postgres_data:
 
 networks:
   app-network:
