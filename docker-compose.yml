@@ -6,7 +6,7 @@ services:
               gunicorn --workers 3 --bind 0.0.0.0:8000 orgagps.wsgi:application"
     volumes:
       - .:/usr/src/app
-      - static_volume:/usr/src/app/static
+      - static_volume:/usr/src/app/staticfiles
     ports:
       - "8000:8000"
     networks:
@@ -20,7 +20,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - static_volume:/usr/src/app/static
+      - static_volume:/usr/src/app/staticfiles
     depends_on:
       - web
     networks:

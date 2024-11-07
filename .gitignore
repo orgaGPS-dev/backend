@@ -5,6 +5,7 @@ terraform-aws-ec2/terraform.tfstate.backup
 scripts/
 
 /.venv/
+/staticfiles/
 
 *.pyc
 
