@@ -2,9 +2,13 @@ import os
 import json
 from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
+from dotenv import load_dotenv
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
 
 # Abruf der geheimen Schlüssel aus AWS Secrets Manager
 SECRET_KEY = 's6)yj@n7@a04p!dc106f^cap_!kn^fxn!_n&fu&xq!e+9fz)!$'
@@ -68,13 +72,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'orgagps.wsgi.application'
 
-# Database configuration
 DATABASES = {
     'default': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': BASE_DIR / 'db.sqlite3',
-     }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
+    }
 }
+
 
 '''DATABASES = {
     'default': {
@@ -116,11 +124,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.ionos.de'
-EMAIL_PORT = 587
+EMAIL_HOST = os.getenv('MAIL_HOST')
+EMAIL_PORT = 5432
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'Kingzton'
-EMAIL_HOST_PASSWORD = 'Peace0473!'
+EMAIL_HOST_USER = os.getenv('MAIL_USER')
+EMAIL_HOST_PASSWORD = os.getenv('MAIL_PASS')
 DEFAULT_FROM_EMAIL = 'noreply@orgagps.com'
 EMAIL_SUBJECT_PREFIX = 'Password Recovery'
 
