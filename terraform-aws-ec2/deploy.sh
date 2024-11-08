@@ -3,6 +3,15 @@
 # Stop script on errors
 set -e
 
+# Füge dies an den Anfang des Skripts hinzu
+export AWS_REGION="eu-central-1"
+SECRET_NAME="orgagps-app-secrets"
+
+ACCESS_KEYS_JSON=$(aws secretsmanager get-secret-value --secret-id $SECRET_NAME --query SecretString --output text --region $AWS_REGION)
+export AWS_ACCESS_KEY_ID=$(echo $ACCESS_KEYS_JSON | jq -r '.AWS_ACCESS_KEY_ID')
+export AWS_SECRET_ACCESS_KEY=$(echo $ACCESS_KEYS_JSON | jq -r '.AWS_SECRET_ACCESS_KEY')
+
+
 # Install Terraform
 if ! command -v terraform &> /dev/null; then
   echo "Installing Terraform..."

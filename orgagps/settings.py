@@ -1,14 +1,46 @@
 import os
 import json
+import boto3
+
 from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+def get_secret():
+    """
+    Fetch secrets from AWS Secrets Manager.
+    """
+    secret_name = "my_secret_name"  # Gebe hier deinen Secret-Namen aus AWS Secrets Manager an
+    region_name = "us-east-1"  # Region, in der dein Secret gespeichert ist
 
-# Abruf der geheimen Schlüssel aus AWS Secrets Manager
-SECRET_KEY = 's6)yj@n7@a04p!dc106f^cap_!kn^fxn!_n&fu&xq!e+9fz)!$'
-DEBUG = True
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name="secretsmanager",
+        region_name=region_name,
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+    except Exception as e:
+        raise ImproperlyConfigured(f"Unable to fetch secrets: {e}")
+
+    # Parse and return the secret JSON data
+    secret = json.loads(get_secret_value_response["SecretString"])
+    return secret
+
+# Hole die Geheimdaten und speichere sie
+try:
+    secrets = get_secret()
+except ImproperlyConfigured as e:
+    print(e)
+    secrets = {}
+
+# Setze die Django-Settings
+SECRET_KEY = secrets.get("DJANGO_SECRET_KEY", "fallback-secret-key")
+DEBUG = secrets.get("DJANGO_DEBUG", "True").lower() == "true"
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -79,11 +111,11 @@ WSGI_APPLICATION = 'orgagps.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'mydatabase'),  # Default to your db name
-        'USER': os.getenv('POSTGRES_USER', 'myuser'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'mypassword'),
-        'HOST': 'db',  # The service name defined in docker-compose.yml
-        'PORT': '5432',
+        'NAME': secrets.get('POSTGRES_DB', 'fallback_db'),
+        'USER': secrets.get('POSTGRES_USER', 'fallback_user'),
+        'PASSWORD': secrets.get('POSTGRES_PASSWORD', 'fallback_password'),
+        'HOST': secrets.get('POSTGRES_HOST', 'localhost'),
+        'PORT': secrets.get('POSTGRES_PORT', '5432'),
     }
 }
 
@@ -114,15 +146,21 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email configuration
+# Email-Konfiguration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('MAIL_HOST')
-EMAIL_PORT = 5432
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('MAIL_USER')
-EMAIL_HOST_PASSWORD = os.getenv('MAIL_PASS')
-DEFAULT_FROM_EMAIL = 'noreply@orgagps.com'
-EMAIL_SUBJECT_PREFIX = 'Password Recovery'
+EMAIL_HOST = secrets.get("MAIL_HOST", "smtp.fallback.com")
+EMAIL_PORT = secrets.get("MAIL_PORT", 587)
+EMAIL_USE_TLS = secrets.get("MAIL_USE_TLS", "true").lower() == "true"
+EMAIL_HOST_USER = secrets.get("MAIL_USER", "fallback-user")
+EMAIL_HOST_PASSWORD = secrets.get("MAIL_PASS", "fallback-pass")
+DEFAULT_FROM_EMAIL = secrets.get("DEFAULT_FROM_EMAIL", "noreply@orgagps.com")
+EMAIL_SUBJECT_PREFIX = secrets.get("EMAIL_SUBJECT_PREFIX", "[Orgagps] ")
+
+# CORS und andere Django Settings wie in deiner Konfiguration
+CORS_ALLOWED_ORIGINS = secrets.get("CORS_ALLOWED_ORIGINS", [
+    "https://orgagps.com",
+    "http://localhost:3000"
+])
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
